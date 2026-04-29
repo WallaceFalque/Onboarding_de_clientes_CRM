@@ -1,0 +1,104 @@
+﻿<nav class="navbar navbar-expand-lg border-bottom bg-white px-3">
+
+    <a class="navbar-brand fw-bold" href="/">MiniCRM</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+
+        <ul class="navbar-nav mx-auto gap-lg-3">
+
+            <li class="nav-item">
+                <NavLink class="nav-link text-dark" href="/benchmark">
+                    Benchmark
+                </NavLink>
+            </li>
+
+            <li class="nav-item">
+                <NavLink class="nav-link text-dark" href="/tarefas">
+                    Tarefas
+                </NavLink>
+            </li>
+
+            <li class="nav-item">
+                <NavLink class="nav-link text-dark" href="/onboarding">
+                    Onboardings
+                </NavLink>
+            </li>
+
+            <li class="nav-item">
+                <NavLink class="nav-link text-dark" href="/dashboard">
+                    Dashboard Geral
+                </NavLink>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-dark"
+                       href="#"
+                       role="button"
+                       data-bs-toggle="dropdown">
+                    Admin
+                </a>
+
+                <ul class="dropdown-menu">
+
+                    <li>
+                        <NavLink class="dropdown-item" href="/cadastroUsuario">
+                            Cadastrar Cliente
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink class="dropdown-item" href="/atribuir-cliente">
+                            Atribuir Cliente
+                        </NavLink>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li>
+                        <NavLink class="dropdown-item" href="/criar-tarefa">
+                            Criar Tarefa
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink class="dropdown-item" href="/atribuir-tarefa">
+                            Atribuir Tarefa
+                        </NavLink>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li>
+                        <NavLink class="dropdown-item" href="/criarUnboarding">
+                            Criar Onboarding
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink class="dropdown-item" href="/atribuir-onboarding">
+                            Atribuir Onboarding
+                        </NavLink>
+                    </li>
+
+                </ul>
+            </li>
+
+        </ul>
+
+        <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+            <i class="bi bi-bell-fill"></i>
+
+            <img src="https://www.conexaotvweb.com.br/uploads/images/2025/11/medico-afirma-que-viu-e-se-comunicou-telepaticamente-com-o-et-de-varginha-470b8.jpg"
+                 style="object-fit:cover; height:40px; width:40px;"
+                 class="rounded-circle" />
+
+        </div>
+
+    </div>
+
+</nav>

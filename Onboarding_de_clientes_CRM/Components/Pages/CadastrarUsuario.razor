@@ -1,0 +1,261 @@
+﻿@page "/cadastroUsuario"
+@using Onboarding_de_clientes_CRM.Models
+@using Onboarding_de_clientes_CRM.Data
+@inject ApplicationDbContext db
+@rendermode InteractiveServer
+
+<style>
+    .custom-card { border-radius: 12px; transition: transform 0.2s; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #dee2e6; padding: 0.6rem 0.75rem; }
+    .form-control:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); }
+    .table thead th { background-color: #f8f9fa; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; color: #6c757d; }
+    .btn-action { border-radius: 8px; padding: 0.5rem 1.25rem; font-weight: 500; }
+    .avatar-circle { width: 32px; height: 32px; background: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+</style>
+
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center text-md-start">
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-people-fill text-primary me-2"></i>Gestão de Clientes
+            </h3>
+            <p class="text-muted">Cadastre novos usuários e gerencie sua base de clientes com facilidade.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 custom-card">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold m-0"><i class="bi bi-plus-circle me-2 text-primary"></i>Novo Cliente</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold">Nome Completo</label>
+                            <input class="form-control" placeholder="Ex: João Silva" @bind="novoCliente" />
+                        </div>
+                        <div class="col-md-7">
+                            <label class="form-label small fw-bold">E-mail</label>
+                            <input type="email" class="form-control" placeholder="joao@exemplo.com" @bind="novoEmail" />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-bold">Apelido</label>
+                            <input class="form-control" placeholder="Como ele prefere ser chamado" @bind="novoApelido" />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Setor</label>
+                            <select class="form-select" @bind="novoSetor">
+                                <option value="" disabled selected>Selecione um setor...</option>
+                                @foreach (var s in setores)
+                                {
+                                    <option value="@s">@s</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-primary btn-action w-100 shadow-sm" @onclick="AdicionarCliente">
+                                <i class="bi bi-check-lg me-1"></i> Cadastrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 custom-card bg-white h-100">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-dark mb-4 border-bottom pb-2">Últimos Adicionados</h6>
+                    <div class="list-group list-group-flush">
+                        @foreach (var c in ClientesList.OrderByDescending(x => x.Id).Take(5))
+                        {
+                            <div class="list-group-item border-0 px-0 mb-2 d-flex align-items-center">
+                                <div class="avatar-circle me-3">@c.Nome.Substring(0,1).ToUpper()</div>
+                                <div>
+                                    <div class="fw-bold small text-dark">@c.Nome</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">@c.Setor</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm border-0 custom-card">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold m-0"><i class="bi bi-search me-2 text-primary"></i>Localizar e Editar</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="input-group mb-3 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                <input class="form-control border-0" placeholder="Digite o nome para buscar..." @bind="clienteEditado" />
+                                <button class="btn btn-dark border-0 px-4" @onclick="Inicializardicao">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+
+                            <div class="mt-2">
+                                @foreach (var cliente in clientesFiltrados)
+                                {
+                                    <div class="p-3 border rounded mb-2 d-flex justify-content-between align-items-center bg-light">
+                                        <span class="fw-medium small">@cliente.Nome</span>
+                                        <button class="btn btn-sm btn-outline-primary" @onclick="() => SelecionarCliente(cliente)">
+                                            Selecionar
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            @if (editandoCliente)
+                            {
+                                <div class="card border-primary-subtle shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="card-title fw-bold mb-3">Editando: @clienteEscolhido.Nome</h6>
+                                        <div class="row g-2">
+                                            <div class="col-12">
+                                                <input class="form-control form-control-sm" @bind="clienteEscolhido.Nome" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input class="form-control form-control-sm" @bind="clienteEscolhido.Email" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input class="form-control form-control-sm" @bind="clienteEscolhido.Apelido" />
+                                            </div>
+                                            <div class="col-12 d-flex gap-2 mt-2">
+                                                <button class="btn btn-success btn-sm w-100" @onclick="SalvarEdicao">Salvar</button>
+                                                <button class="btn btn-light btn-sm w-100" @onclick="CancelarEdicaoCompleta">Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="h-100 d-flex align-items-center justify-content-center border rounded-3 bg-light opacity-50">
+                                    <p class="small text-muted">Selecione um usuário para editar os detalhes</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-5">
+            <div class="card shadow-sm border-0 custom-card overflow-hidden">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold m-0 text-dark"><i class="bi bi-person-lines-fill text-primary pe-2"></i>Todos os Usuários</h5>
+                    <span class="badge bg-primary-subtle text-primary rounded-pill">Total: @todosClientes.Count</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Apelido</th>
+                                <th class="text-end pe-4">Setor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cliente in todosClientes)
+                            {
+                                <tr>
+                                    <td class="ps-4 text-muted">#@cliente.Id</td>
+                                    <td><span class="fw-bold">@cliente.Nome</span></td>
+                                    <td>@cliente.Email</td>
+                                    <td><span class="badge bg-light text-dark">@cliente.Apelido</span></td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge bg-success-subtle text-black text-black" style="font-size: 0.7rem;">@cliente.Setor</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<Cliente> todosClientes = new();
+    List<Cliente> ClientesList = new();
+    List<Cliente> clientesFiltrados = new();
+    Cliente clienteEscolhido = new();
+
+    string clienteEditado = "";
+    bool editandoCliente = false;
+
+    string novoCliente = "";
+    string novoEmail = "";
+    string novoApelido = "";
+    string novoSetor = "";
+
+    List<string> setores = new()
+    {
+        "Marketing","Vendas","Administração","Financeiro","TI","Suporte","Operações"
+    };
+
+    protected override void OnInitialized()
+    {
+        todosClientes = db.Clientes.ToList();
+        ClientesList = todosClientes.ToList();
+    }
+
+    void AdicionarCliente()
+    {
+        if (string.IsNullOrWhiteSpace(novoCliente)) return;
+
+        var cliente = new Cliente
+        {
+            Nome = novoCliente,
+            Email = novoEmail,
+            Apelido = novoApelido,
+            Setor = novoSetor
+        };
+
+        db.Clientes.Add(cliente);
+        db.SaveChanges();
+
+        novoCliente = "";
+        novoEmail = "";
+        novoApelido = "";
+        novoSetor = "";
+
+        OnInitialized();
+    }
+
+    void Inicializardicao()
+    {
+        clientesFiltrados = db.Clientes
+            .Where(c => c.Nome.Contains(clienteEditado))
+            .ToList();
+    }
+
+    void SelecionarCliente(Cliente cliente)
+    {
+        clienteEscolhido = cliente;
+        editandoCliente = true;
+    }
+
+    void SalvarEdicao()
+    {
+        db.SaveChanges();
+        editandoCliente = false;
+        OnInitialized();
+    }
+
+    void CancelarEdicaoCompleta()
+    {
+        editandoCliente = false;
+        clienteEscolhido = new();
+    }
+}
