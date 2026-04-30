@@ -10,19 +10,122 @@
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-12">
+            <div class="col-lg-8">
                 <div class="card shadow-sm border-0 custom-card">
                     <div class="card-header bg-transparent border-0 pt-4 px-4">
                         <h5 class="fw-bold m-0"><i class="bi bi-plus-circle me-2 text-primary"></i>Novo Unboarding</h5>
                     </div>
                     <div class="card-body p-4">
+                       
                         <div class="row g-4">
-                            <div class="col-12">
-                                <label class="form-label fw-medium fw-bold">Nome da do Projeto</label>
-                                <input class="form-control" placeholder=""/>
+
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Nome do Projeto</label>
+                                <input class="form-control" />
                             </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Prioridade</label>
+                                <select class="form-select">
+                                    <option selected disabled>Selecione</option>
+                                    <option>Baixa</option>
+                                    <option>Média</option>
+                                    <option>Alta</option>
+                                    <option>Urgente</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Data de Início</label>
+                                <input class="form-control" type="date" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Tem prazo final?</label>
+                                <select class="form-select" id="temPrazo">
+                                    <option selected disabled>Selecione</option>
+                                    <option value="true">Sim</option>
+                                    <option value="false">Não</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Data Final</label>
+                                <input class="form-control" type="date" disabled />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Tem descrição?</label>
+                                <select class="form-select" id="temDescricao">
+                                    <option selected disabled>Selecione</option>
+                                    <option value="true">Sim</option>
+                                    <option value="false">Não</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Descrição do Projeto</label>
+                                <textarea class="form-control" rows="4" disabled></textarea>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-end pt-3">
+                                <button class="btn btn-primary px-5">
+                                    Confirmar Projeto
+                                </button>
+                            </div>                           
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 h-100 bg-white">
+
+                    <div class="card-body p-4">
+
+                        <h6 class="fw-bold text-dark mb-4 border-bottom pb-2">
+                            <i class="bi bi-clock-history me-2 text-primary"></i>
+                            Últimos Projetos
+                        </h6>
+
+                        <div class="d-flex flex-column gap-3">
+
+                            <!-- ITEM -->
+                            <div class="d-flex align-items-center justify-content-between p-2 rounded hover-light">
+
+                                <div class="d-flex align-items-center gap-3">
+
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                         style="width:40px;height:40px;font-size:14px;">
+                                        PG
+                                    </div>
+
+                                    <div>
+                                        <div class="fw-semibold small text-dark">
+                                            Projeto Golpe em Golpista
+                                        </div>
+
+                                        <div class="text-muted small">
+                                            Wallace Falque
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="text-end">
+                                    <span class="badge bg-danger-subtle text-danger small">
+                                        Urgente
+                                    </span>
+                                    <div class="text-muted" style="font-size:11px;">
+                                        Hoje
+                                    </div>
+                                </div>
+
+                            </div>                          
+
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
