@@ -1,4 +1,8 @@
 ﻿@page "/criarUnboarding"
+@using Onboarding_de_clientes_CRM.Data
+@inject ApplicationDbContext db
+@using Onboarding_de_clientes_CRM.Models
+@rendermode InteractiveServer
 
 <div class="container py-5">
     <div class="row mb-5">
@@ -21,23 +25,26 @@
 
                             <div class="col-md-8">
                                 <label class="form-label fw-semibold">Nome do Projeto</label>
-                                <input class="form-control" />
+                                <input class="form-control" @bind="novoOnboarding" />
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Prioridade</label>
                                 <select class="form-select">
+                                   
+                                    @foreach (var opcoes in Enum.GetValues<PrioridadeOnboarding>())
+                              
+                                    {
+                                        <option selected value="@opcoes">@opcoes</option>
+                                    }
                                     <option selected disabled>Selecione</option>
-                                    <option>Baixa</option>
-                                    <option>Média</option>
-                                    <option>Alta</option>
-                                    <option>Urgente</option>
                                 </select>
+                                
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Data de Início</label>
-                                <input class="form-control" type="date" />
+                                <input class="form-control" @bind="dataInicio" type="date" />
                             </div>
 
                             <div class="col-md-4">
@@ -50,8 +57,8 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Data Final</label>
-                                <input class="form-control" type="date" disabled />
+                                <label class="form-label fw-semibold">Prazo Máximo</label>
+                                <input class="form-control" type="date" @bind="prazo" disabled />
                             </div>
 
                             <div class="col-md-6">
@@ -65,14 +72,14 @@
 
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Descrição do Projeto</label>
-                                <textarea class="form-control" rows="4" disabled></textarea>
+                                <textarea class="form-control" @bind="descricao" rows="4" disabled></textarea>
                             </div>
 
                             <div class="col-12 d-flex justify-content-end pt-3">
-                                <button class="btn btn-primary px-5">
-                                    Confirmar Projeto
+                                <button class="btn btn-primary px-5" @onclick="AdicionarProjeto">
+                                    Criar Projeto
                                 </button>
-                            </div>                           
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -89,7 +96,6 @@
 
                         <div class="d-flex flex-column gap-3">
 
-                            <!-- ITEM -->
                             <div class="d-flex align-items-center justify-content-between p-2 rounded hover-light">
 
                                 <div class="d-flex align-items-center gap-3">
@@ -120,7 +126,7 @@
                                     </div>
                                 </div>
 
-                            </div>                          
+                            </div>
 
                         </div>
 
@@ -128,11 +134,123 @@
 
                 </div>
             </div>
+
+            <div class="col-12 mb-5">
+                <div class="card shadow-sm border-0 custom-card overflow-hidden">
+                    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold m-0 text-dark">
+                            <i class="bi bi-kanban-fill text-primary pe-2"></i>Projetos
+                        </h5>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill">@todosProjetos.Count</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">ID</th>
+                                    <th>Projeto</th>
+                                    <th>Cliente</th>
+                                    <th>Início</th>
+                                    <th>Prazo</th>
+                                    <th>Prioridade</th>
+                                    <th>Progresso</th>
+                                    <th class="text-end pe-4">Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var projeto in todosProjetos)
+                                {
+                                    <tr>
+                                        <td class="ps-4 text-muted">@projeto.Id</td>
+
+                                        <td>
+                                            <span class="fw-bold">@projeto.Nome</span>
+                                        </td>
+
+                                        <td>@projeto.DataInicio.ToShortDateString()</td>
+
+                                        <td>@(projeto.Prazo?.ToShortDateString() ?? "-")</td>
+
+                                        <td>
+                                            <span class="badge bg-danger-subtle text-dark">
+                                                @projeto.Prioridade
+                                            </span>
+                                        </td>
+
+                                        <td style="min-width: 120px;">
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: 75%"></div>
+                                            </div>
+                                        </td>
+
+                                        <td class="text-end pe-4">
+                                            <span class="badge bg-warning-subtle text-dark">
+                                                EM BREVE
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="7" class="px-4 pb-3 pt-0">
+                                            <div class="bg-light rounded p-3 small text-muted">
+                                                @(string.IsNullOrWhiteSpace(projeto.Descricao)
+                                                    ? "Sem descrição"
+                                                    : projeto.Descricao)
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+
+                               
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
 </div>
 
 @code {
+    List<Onboarding> todosProjetos = new();
 
+    string novoOnboarding = "";
+    PrioridadeOnboarding? prioridade = null;
+    DateTime dataInicio = DateTime.Today;
+    DateTime? prazo = DateTime.Today;
+    string? descricao = "";
+
+    protected override void OnInitialized()
+    {
+        todosProjetos = db.Onboardings.ToList();
+
+    }
+
+    void AdicionarProjeto()
+    {
+        if (string.IsNullOrWhiteSpace(novoOnboarding)) return;
+
+        var onboarding = new Onboarding
+        {
+            Nome = novoOnboarding,
+            DataInicio = dataInicio,
+            Prioridade = prioridade,
+            Descricao = descricao
+        };
+
+        db.Onboardings.Add(onboarding);
+        db.SaveChanges();
+
+        novoOnboarding = "";
+        prioridade = null;
+        dataInicio = DateTime.Today;
+        prazo = DateTime.Today;
+        descricao = "";
+
+        todosProjetos = db.Onboardings.ToList();
+    }
 }
