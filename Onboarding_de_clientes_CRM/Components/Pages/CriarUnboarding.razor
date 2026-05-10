@@ -30,7 +30,7 @@
 
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Prioridade</label>
-                                <select class="form-select">
+                                <select class="form-select" @bind="prioridade">
                                    
                                     @foreach (var opcoes in Enum.GetValues<PrioridadeOnboarding>())
                               
@@ -51,7 +51,7 @@
                                 <label class="form-label fw-semibold">Tem prazo final?</label>
                                 <select class="form-select" id="temPrazo">
                                     <option selected disabled>Selecione</option>
-                                    <option value="true">Sim</option>
+                                    <option value="@temPrazo">Sim</option>
                                     <option value="false">Não</option>
                                 </select>
                             </div>
@@ -135,84 +135,114 @@
                 </div>
             </div>
 
-            <div class="col-12 mb-5">
-                <div class="card shadow-sm border-0 custom-card overflow-hidden">
-                    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold m-0 text-dark">
-                            <i class="bi bi-kanban-fill text-primary pe-2"></i>Projetos
-                        </h5>
-                        <span class="badge bg-primary-subtle text-primary rounded-pill">@todosProjetos.Count</span>
+            <div class="col-12 mt-4">
+
+                <div class="card shadow-sm border-0 custom-card">
+
+                    <div class="card-header bg-transparent border-0 pt-4 px-4">
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                            <div>
+                                <h5 class="fw-bold m-0">
+                                    <i class="bi bi-kanban-fill text-primary me-2"></i>
+                                    Projetos Cadastrados
+                                </h5>
+
+                                <small class="text-muted">
+                                    Visualize todos os onboardings cadastrados no sistema.
+                                </small>
+                            </div>
+
+                        </div>
+
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="ps-4">ID</th>
-                                    <th>Projeto</th>
-                                    <th>Cliente</th>
-                                    <th>Início</th>
-                                    <th>Prazo</th>
-                                    <th>Prioridade</th>
-                                    <th>Progresso</th>
-                                    <th class="text-end pe-4">Status</th>
-                                </tr>
-                            </thead>
+                    <div class="card-body p-0">
 
-                            <tbody>
-                                @foreach (var projeto in todosProjetos)
-                                {
+                        <div class="table-responsive rounded-bottom-4">
+
+                            <table class="table table-hover align-middle mb-0">
+
+                                <thead class="bg-light">
                                     <tr>
-                                        <td class="ps-4 text-muted">@projeto.Id</td>
-
-                                        <td>
-                                            <span class="fw-bold">@projeto.Nome</span>
-                                        </td>
-
-                                        <td>@projeto.DataInicio.ToShortDateString()</td>
-
-                                        <td>@(projeto.Prazo?.ToShortDateString() ?? "-")</td>
-
-                                        <td>
-                                            <span class="badge bg-danger-subtle text-dark">
-                                                @projeto.Prioridade
-                                            </span>
-                                        </td>
-
-                                        <td style="min-width: 120px;">
-                                            <div class="progress" style="height: 6px;">
-                                                <div class="progress-bar bg-success" style="width: 75%"></div>
-                                            </div>
-                                        </td>
-
-                                        <td class="text-end pe-4">
-                                            <span class="badge bg-warning-subtle text-dark">
-                                                EM BREVE
-                                            </span>
-                                        </td>
+                                        <th class="ps-4">ID</th>
+                                        <th>Projeto</th>
+                                        <th>Cliente</th>
+                                        <th>Início</th>
+                                        <th>Prazo</th>
+                                        <th>Prioridade</th>
+                                        <th>Progresso</th>
+                                      
                                     </tr>
+                                </thead>
 
-                                    <tr>
-                                        <td colspan="7" class="px-4 pb-3 pt-0">
-                                            <div class="bg-light rounded p-3 small text-muted">
-                                                @(string.IsNullOrWhiteSpace(projeto.Descricao)
-                                                    ? "Sem descrição"
-                                                    : projeto.Descricao)
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
+                                <tbody>
 
-                               
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                                    @foreach (var projeto in todosProjetos)
+                                    {
+
+                                        <tr>
+
+                                            <td class="ps-4 text-muted">
+                                                @projeto.Id
+                                            </td>
+
+                                            <td>
+                                                <span class="fw-bold text-dark">
+                                                    @projeto.Nome
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                @(projeto.Cliente?.Nome ?? "-")
+                                            </td>
+
+                                            <td>
+                                                @projeto.DataInicio.ToShortDateString()
+                                            </td>
+
+                                            <td>
+                                                @(projeto.Prazo?.ToShortDateString() ?? "-")
+                                            </td>
+
+                                            <td>
+                                                <span class="badge bg-danger-subtle text-dark px-3 py-2">
+                                                    @projeto.Prioridade
+                                                </span>
+                                            </td>
+
+                                            <td style="min-width: 120px;">
+
+                                                <div class="progress" style="height: 6px;">
+
+                                                    <div class="progress-bar bg-success"
+                                                         style="width: 75%">
+                                                    </div>
+
+                                                </div>
+
+                                            </td>
+
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>                  
+
+            </div>              
 
         </div>
 
     </div>
+
+</div>
 </div>
 
 @code {
@@ -221,8 +251,11 @@
     string novoOnboarding = "";
     PrioridadeOnboarding? prioridade = null;
     DateTime dataInicio = DateTime.Today;
-    DateTime? prazo = DateTime.Today;
+    DateTime? prazo = null;
     string? descricao = "";
+
+    bool temPrazo = false;
+    bool temDescricao = false;
 
     protected override void OnInitialized()
     {
@@ -253,4 +286,5 @@
 
         todosProjetos = db.Onboardings.ToList();
     }
+
 }
